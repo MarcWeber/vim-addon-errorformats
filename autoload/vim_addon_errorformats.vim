@@ -27,12 +27,26 @@ let s:c.ocaml_simple = get(s:c, 'ocaml_simple',
       \.'\ characters\ %c-%*\\d:,'
       \.'%Z%m')
 
+let s:c.python = get(s:c, 'python',
+	\  '%A\ \ File\ \"%f\"\\\,\ line\ %l\\\,%m,'
+	\ .'%C\ \ \ \ %.%#,'
+	\ .'%+Z%.%#Error\:\ %.%#,'
+	\ .'%A\ \ File\ \"%f\"\\\,\ line\ %l,'
+	\ .'%+C\ \ %.%#,'
+	\ .'%Z%m,')
+
+" errorformat taken from http://www.vim.org/scripts/script.php?script_id=477
+let s:c.ruby = get(s:c, 'ruby',
+        \ '\ \ \ \ \ \#\ %f:%l:%m,'
+        \ .'\	from\ %f:%l:%m,%f:%l:%m')
+
+
 " key can be a list of names, eg 'ocaml_trace, default' or a list
 " ['ocaml_trace', 'default']
 fun! vim_addon_errorformats#ErrorFormat(key) abort
   let formats = []
   for i in type(a:key) == type([]) ? a:key : split(a:key, '\s\+')
-    call add(formats, s:c[a:key])
+    call add(formats, s:c[i])
   endfor
   return join(formats, ',')
 endf
@@ -42,7 +56,8 @@ fun! vim_addon_errorformats#SetErrorFormat(key) abort
 endf
 
 fun! vim_addon_errorformats#CommandCompletion(A, L, P) abort
-  return filter(keys(s:c), 'v:val =~ '.string('^'.a:A))
+  let s = matchstr(a:A[0:a:P], '\S*$')
+  return filter(keys(s:c), 'v:val =~ '.string('^'.s))
 endf
 
 fun! vim_addon_errorformats#InputErrorFormatNames() abort
