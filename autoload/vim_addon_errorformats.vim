@@ -71,7 +71,7 @@ fun! vim_addon_errorformats#QuoteForAssignment(efm)
 endf
 
 fun! vim_addon_errorformats#SetErrorFormatLines(efm_lines) abort
-  debug exec 'set efm='.vim_addon_errorformats#QuoteForAssignment(a:efm_lines)
+  exec 'set efm='.vim_addon_errorformats#QuoteForAssignment(a:efm_lines)
 endf
 
 " return error format lines from &efm
