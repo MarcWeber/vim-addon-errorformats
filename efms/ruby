@@ -1,0 +1,3 @@
+#EFMCOMMENT errorformat taken from http://www.vim.org/scripts/script.php?script_id=477
+\ \ \ \ \ \#\ %f:%l:%m
+\	from\ %f:%l:%m,%f:%l:%m
