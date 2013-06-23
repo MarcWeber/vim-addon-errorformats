@@ -1,4 +1,17 @@
-You never know when you need which kind of error formats, and sometimes you
-want to set the errorformat only, not :make etc.
+vim-addon-errorformats
+======================
 
+Usage:
+    :Errorformat ocaml_simple ruby
 
+Why:
+- less complicated quoting
+- Allow to use multiple error formats at the same time.
+  This is useful if you run rake (written in Ruby) to compile ocaml.
+
+error format names (=keys):
+
+  rtp_*: extracted from compiler/* files
+  rest: provided in efms/ directory
+
+You can register your own sources

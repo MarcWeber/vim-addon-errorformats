@@ -1,6 +1,2 @@
-%+AFile\ \"%f\"\\
-\ line\ %l\\
-\ characters\ %c-%*\\d:
-%Z%m
-#EFMCOMMENT: ocaml trace:
-Called\ from\ file\ \\\"%f\\\"\\,\ line\ %l\\,\ characters\ %c-%m
+File "%f", line %l, characters %c-%m
+Called from file \"%f\"\, line %l\, characters %c-%m

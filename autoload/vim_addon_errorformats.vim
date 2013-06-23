@@ -28,16 +28,16 @@ endf
 "
 " key can be a list of names, eg 'ocaml_trace, default' or a list
 " ['ocaml_trace', 'default']
-fun! vim_addon_errorformats#ErrorFormat(keys) abort
+fun! vim_addon_errorformats#ErrorFormatLines(keys) abort
   let formats = []
   for key in type(a:keys) == type([]) ? a:keys : split(a:keys, '\s\+')
 
     let c = 0
     for [k, dict] in items(s:c.sources)
       let r = call(dict.efm, [key], dict)
-      if r != ""
+      if r != []
         let c += 1
-        call add(formats, r)
+        call extend(formats, r)
       endif
       unlet k dict
     endfor
@@ -46,35 +46,48 @@ fun! vim_addon_errorformats#ErrorFormat(keys) abort
     if c == 0 | throw "no error format found for key: ".key | endif
 
   endfor
-  let r = join(formats, ',')
-  return r
+  return formats
 endf
 
 " set error format
+
 fun! vim_addon_errorformats#SetErrorFormat(keys) abort
-  exec 'set efm='.vim_addon_errorformats#ErrorFormat(a:keys)
+  call vim_addon_errorformats#SetErrorFormatLines(vim_addon_errorformats#ErrorFormatLines(a:keys))
 endf
 
-" ask user for error formats
+" ask user for error formats, return list of keys
 fun! vim_addon_errorformats#InputErrorFormat() abort
   return vim_addon_errorformats#ErrorFormat(vim_addon_errorformats#InputErrorFormatNames())
 endf
 
 
-
 " helpers {{{1
 let s:plugin_root = expand('<sfile>:h:h')
+
+" efm = ['unquoted line', 'next unquoted line']
+
+fun! vim_addon_errorformats#QuoteForAssignment(efm)
+  return join(map(copy(a:efm), 'substitute(substitute(v:val, '.string('\(["\t ,\\]\)').', '.string('\\\1').', "g"), ",", '.string('\\,').', "g")'),',')
+endf
+
+fun! vim_addon_errorformats#SetErrorFormatLines(efm_lines) abort
+  debug exec 'set efm='.vim_addon_errorformats#QuoteForAssignment(a:efm_lines)
+endf
+
+" return error format lines from &efm
+fun! vim_addon_errorformats#GetErrorFormat() abort
+  return map(split(&efm, '\\\@<!,'), 'substitute(v:val, '.string('\\,').', '.string(',').', "")')
+endf
 
 " error formats provided by this plugin {{{2
 fun s:c.sources.efms_shipping_with_this_plugin.efm(key)
   let file = s:plugin_root.'/efms/'.a:key
   if !file_readable(file) | return "" | endif
   let lines = readfile(file)
-  call filter(lines, 'v:val =~ '.string('#EFMCOMMENT'))
-  return join(lines,',')
+  return filter(lines, 'v:val !~ '.string('^#EFMCOMMENT'))
 endf
 fun s:c.sources.efms_shipping_with_this_plugin.list()
-  return map(glob(s:plugin_root.'/efms/*', 0, 1), '"rtp_".fnamemodify(v:val, ":t:r")')
+  return map(glob(s:plugin_root.'/efms/*', 0, 1), 'fnamemodify(v:val, ":t:r")')
 endf
 
 
@@ -103,11 +116,10 @@ fun s:c.sources.efms_rtp.efm(key)
         endif
       endfor
       execute substitute(join(lines, "\n"), 'CompilerSet ', 'set', '')
-      return &efm
+      return vim_addon_errorformats#GetErrorFormat()
     endif
-
   endfor
-  return ""
+  return []
 endf
 fun s:c.sources.efms_rtp.list()
   let r = []
@@ -118,13 +130,26 @@ fun s:c.sources.efms_rtp.list()
 endf
 
 
-
 " completion stuff {{{2
 fun! vim_addon_errorformats#CommandCompletion(A, L, P) abort
   let s = matchstr(a:A[0:a:P], '\S*$')
-  return filter(vim_addon_errorformats#KnownFormats(), 'v:val =~ '.string('^'.s))
+  return filter(vim_addon_errorformats#KnownFormats(), 'v:val =~ '.string(s))
 endf
 
 fun! vim_addon_errorformats#InputErrorFormatNames() abort
   return input('error format(s):', '', 'customlist,vim_addon_errorformats#CommandCompletion')
+endf
+
+" tests {{{2
+
+fun! vim_addon_errorformats#Test()
+  let efm=[' ,', '\']
+  call vim_addon_errorformats#SetErrorFormat(efm)
+  let res = vim_addon_errorformats#GetErrorFormat()
+  if efm != res
+    echoe 'expected: '.string(efm)
+    echoe 'got: '.string(res)
+  else
+    echom "check passed"
+  endif
 endf
