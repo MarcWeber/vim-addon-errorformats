@@ -90,6 +90,24 @@ fun s:c.sources.efms_shipping_with_this_plugin.list()
   return map(glob(s:plugin_root.'/efms/*', 0, 1), 'fnamemodify(v:val, ":t:r")')
 endf
 
+fun! vim_addon_errorformats#EFMFromCompilerFile(file)
+  let state = "out"
+  let lines = []
+  for l in readfile(a:file)
+    if state == "out" && l =~ 'CompilerSet errorformat='
+      let state = "in_first"
+    endif
+    if state =~ "^in"
+      if state == "in" && (l =~ '^\s*$' || l[0] !~ '\s')
+        let state = "out"
+      else
+        call add(lines, l)
+      endif
+      let state = "in"
+    endif
+  endfor
+  return lines
+endf
 
 " erorr formats taken from compiler/* files {{{2
 " Yes, this is impure and sets errorformat. Fix it if you want.
@@ -101,20 +119,7 @@ fun s:c.sources.efms_rtp.efm(key)
     let file = rtp.'/compiler/'.name.'.vim'
     if file_readable(file)
       " this may fail .. this is hacky!
-      let state = "out"
-      let lines = []
-      for l in readfile(file)
-        if state == "out" && l =~ 'CompilerSet errorformat='
-          let state = "in"
-        endif
-        if state == "in"
-          if l =~ '^\s*$' || l[0] !~ '\s'
-            let state = "out"
-          else
-            call add(lines, l)
-          endif
-        endif
-      endfor
+      let lines = vim_addon_errorformats#EFMFromCompilerFile(file)
       execute substitute(join(lines, "\n"), 'CompilerSet ', 'set', '')
       return vim_addon_errorformats#GetErrorFormat()
     endif
