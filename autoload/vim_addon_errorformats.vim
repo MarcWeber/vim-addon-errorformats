@@ -82,7 +82,7 @@ endf
 " error formats provided by this plugin {{{2
 fun s:c.sources.efms_shipping_with_this_plugin.efm(key)
   let file = s:plugin_root.'/efms/'.a:key
-  if !file_readable(file) | return "" | endif
+  if !file_readable(file) | return [] | endif
   let lines = readfile(file)
   return filter(lines, 'v:val !~ '.string('^#EFMCOMMENT'))
 endf

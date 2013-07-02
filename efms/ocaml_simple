@@ -1,2 +1,2 @@
 File "%f", line %l, characters %c-%m
-Called from file \"%f\"\, line %l\, characters %c-%m
+Called from file \"%f\", line %l, characters %c-%m
