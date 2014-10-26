@@ -3,3 +3,4 @@
 %m\ at\ \`%f:%l:%c':
 %m\ at\ \`%f'\\\,\ line\ %l:
 error:\ %m\\,\ in\ `%f'
+error:\ %m\ at\ %f:%l:%c
