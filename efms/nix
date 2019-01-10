@@ -5,3 +5,4 @@
 error:\ %m\\,\ in\ `%f'
 error:\ %m\ at\ "%f":%l:%c
 error:\ %m\ at\ %f:%l:%c
+[31;1m%m[1m%f[0m:%l:%c
