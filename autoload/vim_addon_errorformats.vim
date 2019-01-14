@@ -67,7 +67,7 @@ let s:plugin_root = expand('<sfile>:h:h')
 " efm = ['unquoted line', 'next unquoted line']
 
 fun! vim_addon_errorformats#QuoteForAssignment(efm)
-  return join(map(copy(a:efm), 'substitute(substitute(v:val, '.string('\(["\t ,\\]\)').', '.string('\\\1').', "g"), ",", '.string('\\,').', "g")'),',')
+  return join(map(copy(a:efm), 'substitute(substitute(v:val, '.string('\(["\t ,\\|]\)').', '.string('\\\1').', "g"), ",", '.string('\\,').', "g")'),',')
 endf
 
 fun! vim_addon_errorformats#SetErrorFormatLines(efm_lines) abort

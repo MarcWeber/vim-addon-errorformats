@@ -15,3 +15,5 @@ error format names (=keys):
   rest: provided in efms/ directory
 
 You can register your own sources
+
+TODO: Get rid of funcref# in all of my Vim related plugins and replace by viml lambdas
