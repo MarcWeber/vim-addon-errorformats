@@ -1,3 +1,7 @@
-%*[ ]--> %f:%l:%c
-%*[ ]--> %f:%l:%c%m
-%f:%l:%c%m
+%+G  = note:%.%#
+%+G   |                            ---------- expected%.%#
+%Eerror%m
+%C  --> %f:%l:%c
+%Wwarning: %m
+%C --> %f:%l:%c
+%-G%.%#
